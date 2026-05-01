@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: nexchat-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - nexchat-net
+
+  backend:
+    build: ./backend
+    container_name: nexchat-backend
+    ports:
+      - "8080:8080"
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/nexchat
+      JWT_SECRET: change-this-in-production-min-32-chars
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
+      ENCRYPTION_KEY: NexChatSecretKey@2024#Encrypt32!!
+      CORS_ORIGINS: http://localhost:5173,http://localhost:80
+    depends_on:
+      - mongodb
+    networks:
+      - nexchat-net
+
+  frontend:
+    build: ./frontend
+    container_name: nexchat-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - nexchat-net
+
+volumes:
+  mongo_data:
+
+networks:
+  nexchat-net:
+    driver: bridge

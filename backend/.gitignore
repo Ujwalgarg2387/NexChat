@@ -1,0 +1,12 @@
+target/
+*.class
+*.jar
+*.war
+.env
+.env.*
+*/.env
+*/.env.*
+*.log
+.idea/
+*.iml
+src/main/resources/static/uploads/
